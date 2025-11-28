@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  dnspod-ddns:
+    build: .
+    container_name: dnspod-ddns
+    restart: unless-stopped
+    environment:
+      TENCENTCLOUD_SECRET_ID: "${TENCENTCLOUD_SECRET_ID}"
+      TENCENTCLOUD_SECRET_KEY: "${TENCENTCLOUD_SECRET_KEY}"
+      DDNS_DOMAINS: "${DDNS_DOMAINS}"
+      DDNS_ENABLE_IPV4: "${DDNS_ENABLE_IPV4}"
+      DDNS_ENABLE_IPV6: "${DDNS_ENABLE_IPV6}"
+      DDNS_TTL: "${DDNS_TTL}"
+      DDNS_INTERVAL: "${DDNS_INTERVAL}"
