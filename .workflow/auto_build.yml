@@ -1,0 +1,38 @@
+version: '1.0'
+name: pipeline-20251128
+displayName: 自动构建
+triggers:
+  trigger: manual
+  push:
+    branches:
+      precise:
+        - main
+    paths:
+      precise:
+        - /ddns_dnspod.py
+stages:
+  - name: stage-cf775859
+    displayName: 构建
+    strategy: naturally
+    trigger: auto
+    executor: []
+    steps:
+      - step: build@docker
+        name: build_docker
+        displayName: 镜像构建
+        type: cert
+        certificate: dbefd7e0-ae67-013e-ccbd-3ac3a7b66fd1
+        tag: ${GITEE_PIPELINE_BUILD_NUMBER}
+        dockerfile: ./Dockerfile
+        context: ''
+        artifacts: []
+        isCache: false
+        processorType:
+          - amd64
+          - arm64
+        parameter: {}
+        notify: []
+        strategy:
+          retry: '0'
+strategy:
+  blocking: true
