@@ -11,8 +11,21 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch: [amd64, arm64]
 
     steps:
     - uses: actions/checkout@v4
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    - name: Build the Docker image (${{ matrix.arch }})
+      run: |
+        docker buildx build \
+          --platform linux/${{ matrix.arch }} \
+          --file Dockerfile \
+          --tag my-image-name:${{ matrix.arch }}-$(date +%s) \
+          --load \
+          .
