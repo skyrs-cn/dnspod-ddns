@@ -43,6 +43,7 @@ jobs:
         docker buildx build \
           --platform ${{ matrix.platform }} \
           --file Dockerfile \
+          --tag ${IMAGE}:latest \
           --tag ${IMAGE}:${{ matrix.tag_prefix }}_${{ steps.build_date.outputs.value }} \
           --push \
           .
