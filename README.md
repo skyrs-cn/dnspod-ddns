@@ -101,16 +101,28 @@ DDNS_INTERVAL=3600
 
 ### 0. 直接拉取已构建镜像（推荐）
 
-仓库已将多架构镜像推送至 `ghcr.io/skyrs-cn/dnspod-ddns`，其中 `latest` 标签为多架构清单，`docker pull` 会根据宿主机自动选择 amd64 或 arm64：
+仓库使用 `.github/workflows/docker-image.yml` 中的 GitHub Actions 流水线，每次 `main` 分支的 push / PR 都会自动触发构建，并通过 `docker buildx` 输出 `linux/amd64` 与 `linux/arm64` 的多架构镜像，推送位置为：
+
+```
+ghcr.io/skyrs-cn/dnspod-ddns
+```
+
+当前提供两类标签：
+
+- `latest`：始终指向最近一次主分支构建的多架构镜像；
+- `<时间戳>`：形如 `20240518123045`（UTC 时间，格式 `YYYYMMDDHHMMSS`），等同于对应构建的版本快照。
+
+因为是多架构清单，`docker pull` 会根据宿主机自动选择 amd64 或 arm64：
 
 ```bash
-# 自动匹配本机架构
+# 最新主分支构建
 docker pull ghcr.io/skyrs-cn/dnspod-ddns:latest
 
-# 如果需要指定特定版本，也提供 `架构_时间戳` 标签，例如：
-docker pull ghcr.io/skyrs-cn/dnspod-ddns:amd_20251129142310
-docker pull ghcr.io/skyrs-cn/dnspod-ddns:arm_20251129142310
+# 指定一次构建快照（示例）
+docker pull ghcr.io/skyrs-cn/dnspod-ddns:20240518123045
 ```
+
+可在 GitHub Packages 页面查看可用标签：https://github.com/skyrs-cn/dnspod-ddns/pkgs/container/dnspod-ddns
 
 拉取后即可按照下文的 `docker run` 或 `docker compose` 示例，将镜像名称替换为 `ghcr.io/skyrs-cn/dnspod-ddns:<tag>`。
 

@@ -2,8 +2,14 @@ name: Docker Image CI
 on:
   push:
     branches: [ "main" ]
+    paths:
+      - "ddns_dnspod.py"
+      - "Dockerfile"
   pull_request:
     branches: [ "main" ]
+    paths:
+      - "ddns_dnspod.py"
+      - "Dockerfile"
 
 jobs:
   prepare:
