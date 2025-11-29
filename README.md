@@ -99,6 +99,21 @@ DDNS_INTERVAL=3600
 
 ## 四、使用 Docker 手动构建/运行
 
+### 0. 直接拉取已构建镜像（推荐）
+
+仓库已将多架构镜像推送至 `ghcr.io/skyrs-cn/dnspod-ddns`。镜像标签格式为 `架构_时间戳`，例如 `arm_20251129142310`，可根据需要选择对应架构：
+
+```bash
+# 查看最新标签（可在 GitHub Packages 或 ghcr.io 页面查看）
+# 假设需要拉取 amd64 架构 2025-11-29 的构建：
+docker pull ghcr.io/skyrs-cn/dnspod-ddns:amd_20251129142310
+
+# ARM 版本示例
+docker pull ghcr.io/skyrs-cn/dnspod-ddns:arm_20251129142310
+```
+
+拉取后即可按照下文的 `docker run` 或 `docker compose` 示例，将镜像名称替换为 `ghcr.io/skyrs-cn/dnspod-ddns:<tag>`。
+
 ### 1. 构建镜像
 
 在项目根目录（包含 `Dockerfile` 的目录）执行：
