@@ -1,5 +1,4 @@
 name: Docker Image CI
-
 on:
   push:
     branches: [ "main" ]
@@ -7,83 +6,46 @@ on:
     branches: [ "main" ]
 
 jobs:
-
   prepare:
-
     runs-on: ubuntu-latest
     outputs:
       timestamp: ${{ steps.ts.outputs.value }}
-
     steps:
-    - name: Generate timestamp
-      id: ts
-      run: echo "value=$(date +%Y%m%d%H%M%S)" >> "$GITHUB_OUTPUT"
+      - name: Generate timestamp
+        id: ts
+        run: echo "value=$(date +%Y%m%d%H%M%S)" >> "$GITHUB_OUTPUT"
 
-  build:
-
+  build-and-push:
     runs-on: ubuntu-latest
     needs: prepare
-    strategy:
-      matrix:
-        include:
-          - platform: linux/amd64
-            tag_prefix: amd
-          - platform: linux/arm64
-            tag_prefix: arm
     permissions:
       contents: read
       packages: write
-
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v3
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-    - name: Log in to GHCR
-      uses: docker/login-action@v3
-      with:
-        registry: ghcr.io
-        username: ${{ github.repository_owner }}
-        password: ${{ secrets.GHCR_TOKEN }}
-    - name: Build and push image (${{ matrix.platform }})
-      env:
-        IMAGE: ghcr.io/${{ github.repository_owner }}/dnspod-ddns
-        TS: ${{ needs.prepare.outputs.timestamp }}
-      run: |
-        docker buildx build \
-          --platform ${{ matrix.platform }} \
-          --file Dockerfile \
-          --tag ${IMAGE}:${{ matrix.tag_prefix }} \
-          --tag ${IMAGE}:${{ matrix.tag_prefix }}_${TS} \
-          --push \
-          .
+      - uses: actions/checkout@v4
 
-  publish-manifest:
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
 
-    runs-on: ubuntu-latest
-    needs: [prepare, build]
-    permissions:
-      contents: read
-      packages: write
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-    steps:
-    - name: Log in to GHCR
-      uses: docker/login-action@v3
-      with:
-        registry: ghcr.io
-        username: ${{ github.repository_owner }}
-        password: ${{ secrets.GHCR_TOKEN }}
-    - name: Create multi-arch tags
-      env:
-        IMAGE: ghcr.io/${{ github.repository_owner }}/dnspod-ddns
-        TS: ${{ needs.prepare.outputs.timestamp }}
-      run: |
-        docker manifest create ${IMAGE}:latest \
-          ${IMAGE}:amd_${TS} \
-          ${IMAGE}:arm_${TS}
-        docker manifest push ${IMAGE}:latest
-        docker manifest create ${IMAGE}:${TS} \
-          ${IMAGE}:amd_${TS} \
-          ${IMAGE}:arm_${TS}
-        docker manifest push ${IMAGE}:${TS}
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GHCR_TOKEN }}
+
+      - name: Build and push multi-arch image
+        env:
+          IMAGE: ghcr.io/${{ github.repository_owner }}/dnspod-ddns
+          TS: ${{ needs.prepare.outputs.timestamp }}
+        run: |
+          docker buildx build \
+            --platform linux/amd64,linux/arm64 \
+            --file Dockerfile \
+            --tag ${IMAGE}:latest \
+            --tag ${IMAGE}:${TS} \
+            --push \
+            .
