@@ -45,4 +45,4 @@ jobs:
           --file Dockerfile \
           --tag ${IMAGE}:${{ matrix.tag_prefix }}_${{ steps.build_date.outputs.value }} \
           --push \
-          .ghcr.io/skyrs-cn/dnspod-ddns
+          .
