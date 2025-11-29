@@ -101,14 +101,14 @@ DDNS_INTERVAL=3600
 
 ### 0. 直接拉取已构建镜像（推荐）
 
-仓库已将多架构镜像推送至 `ghcr.io/skyrs-cn/dnspod-ddns`。镜像标签格式为 `架构_时间戳`，例如 `arm_20251129142310`，可根据需要选择对应架构：
+仓库已将多架构镜像推送至 `ghcr.io/skyrs-cn/dnspod-ddns`，其中 `latest` 标签为多架构清单，`docker pull` 会根据宿主机自动选择 amd64 或 arm64：
 
 ```bash
-# 查看最新标签（可在 GitHub Packages 或 ghcr.io 页面查看）
-# 假设需要拉取 amd64 架构 2025-11-29 的构建：
-docker pull ghcr.io/skyrs-cn/dnspod-ddns:amd_20251129142310
+# 自动匹配本机架构
+docker pull ghcr.io/skyrs-cn/dnspod-ddns:latest
 
-# ARM 版本示例
+# 如果需要指定特定版本，也提供 `架构_时间戳` 标签，例如：
+docker pull ghcr.io/skyrs-cn/dnspod-ddns:amd_20251129142310
 docker pull ghcr.io/skyrs-cn/dnspod-ddns:arm_20251129142310
 ```
 
